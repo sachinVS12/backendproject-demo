@@ -15,7 +15,7 @@ client.on("connect", () => {
     };
 
     // publish to topic
-    client.publish("my/home/data", JSON.stringify(message), () => {
+    client.publish("sarayu/d1/topic", JSON.stringify(message), () => {
         console.log("Message published:", message);
         client.end(); // close connection
     });

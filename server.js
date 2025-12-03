@@ -23,7 +23,7 @@ mqttClient.on("connect", () => {
     console.log("MQTT connected");
 
     // subscribe to topic
-    mqttClient.subscribe("my/home/data");
+    mqttClient.subscribe("sarayu/d1/topic");
 });
 
 // handle incoming MQTT messages
