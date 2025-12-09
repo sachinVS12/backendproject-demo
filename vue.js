@@ -48,5 +48,28 @@ app.use(
 app.use((req, res, next)=>{
     req.setTimeout(60000); //10 minutes timeout
     res.setTimeout(60000); //10 minutes timeout
-    res.flush = res.flush || (()=>{});//enusre flush is availbel
-})
+    res.flush = res.flush || (()=>{});//enusre flush is availble
+    logger.info(`Request to url: ${req.url}`,{
+        method: req.method,
+        body: req.body,
+    });
+    next();
+});
+
+//Routers
+app.use("api/v1/auth", authrouters);
+app.use('api/v1/mqtt', mqttrouters);
+app.use("api/v1/supportemail", supportemailrouters);
+app.use("api/v1/backupdb", backupdbrouters);
+
+//errorHnadler
+app.use(errorHandler);
+
+//database connection
+connectdb();
+
+//start the server
+const port = process.env.port || 5000;
+app.listen(port, "0.0.0.0", ()=>{
+    logger.info(`API server running on port ${port}`);
+});
