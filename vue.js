@@ -7,18 +7,18 @@ const cookieparser = require("cookieparser");
 const fileupload = require('express-fileupload');
 const errorHandler = require("./middleware/error");
 const dotenv = require("dotenv");
-const authrouters = require("./routers/authrouters");
-const mqttrouters = require("./routers/mqtrouters");
-const supportemailrouters = require("./routers/supportemailrouters");
-const backupdbrouters = require("./routers/backupdbrouters");
+const authRouters = require("./Routers/authRouters");
+const mqttRouters = require("./Routers/mqttRouters");
+const supportemailRouters = require("./Routers/supportemailRouters");
+const backupdbRouters = require("./Routers/backupdbRouters");
 
-//enviroment load variable
+//Enviroment load variable
 dotenv.config({path: "./.env"});
 
-//initialize express
+//Initialize express
 const app = express();
 
-//logger configuration
+//Logger configuration
 const logger = winston.create.logger({
     level: "info",
     format: winston.combine(
@@ -31,7 +31,7 @@ const logger = winston.create.logger({
     ],
 });
 
-//middleware
+//Middleware
 app.use(express.json());
 app.use(fileupload());
 app.use(express.urlencoded({extended: false}));
@@ -44,7 +44,7 @@ app.use(
     }));
     app.use(cookieparser());
 
-//increase to timeout and enabled chunkked responses
+//Increase request to timeout and enabled chunkked responses
 app.use((req, res, next)=>{
     req.setTimeout(60000); //10 minutes timeout
     res.setTimeout(60000); //10 minutes timeout
@@ -65,10 +65,10 @@ app.use("api/v1/backupdb", backupdbrouters);
 //errorHnadler
 app.use(errorHandler);
 
-//database connection
+//DataBase Connection
 connectdb();
 
-//start the server
+//Start the Server
 const port = process.env.port || 5000;
 app.listen(port, "0.0.0.0", ()=>{
     logger.info(`API server running on port ${port}`);
