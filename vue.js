@@ -1,75 +1,30 @@
-const winston = require("winston");
-const connectdb = require("./eb/env");
-const express = require('express');
-const cors = require('cors');
-const morgan = require('morgan');
-const cookieparser = require("cookieparser");
-const fileupload = require('express-fileupload');
-const errorHandler = require("./middleware/error");
-const dotenv = require("dotenv");
-const authRouters = require("./Routers/authRouters");
-const mqttRouters = require("./Routers/mqttRouters");
-const supportemailRouters = require("./Routers/supportemailRouters");
-const backupdbRouters = require("./Routers/backupdbRouters");
+const mqtt = require("mqtt");
 
-//Enviroment load variable
-dotenv.config({path: "./.env"});
+const YOUR_LOCAL_IP = "192.168.1.231";  // SAME AS ABOVE
 
-//Initialize express
-const app = express();
+const client = mqtt.connect(`mqtt://${YOUR_LOCAL_IP}:1883`);
 
-//Logger configuration
-const logger = winston.create.logger({
-    level: "info",
-    format: winston.combine(
-        winston.format.timestamps(),
-        winston.format.json()
-    ),
-    transports: [
-        new winston.transports.File({fielname: "error.log", level: "error"}),
-        new winston.transports.File({filename: "combined.log"}),
-    ],
+client.on("connect", () => {
+    console.log("Publisher connected to local MQTT broker");
+
+    // Send data every 3 seconds
+    setInterval(() => {
+        const message = {
+            temperature: (Math.random() * 10 + 20).toFixed(2),
+            humidity: (Math.random() * 40 + 40).toFixed(2),
+            status: Math.random() > 0.8 ? "WARNING" : "OK",
+            device: "d1",
+            timestamp: new Date().toISOString()
+        };
+
+        const payload = JSON.stringify(message);
+
+        client.publish("sarayu/d1/topic", payload, { qos: 1 }, () => {
+            console.log("Published:", message);
+        });
+    }, 3000); // every 3 seconds
 });
 
-//Middleware
-app.use(express.json());
-app.use(fileupload());
-app.use(express.urlencoded({extended: false}));
-app.use(
-    cors({
-        origin: "*",
-        methdods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-        exposedHeaders: ['contentent: length', "contentent-dispostion"],
-        maxAge:86400
-    }));
-    app.use(cookieparser());
-
-//Increase request to timeout and enabled chunkked responses
-app.use((req, res, next)=>{
-    req.setTimeout(60000); //10 minutes timeout
-    res.setTimeout(60000); //10 minutes timeout
-    res.flush = res.flush || (()=>{});//enusre flush is availble
-    logger.info(`Request to url: ${req.url}`,{
-        method: req.method,
-        body: req.body,
-    });
-    next();
-});
-
-//Routers
-app.use("api/v1/auth", authRouters);
-app.use('api/v1/mqtt', mqttRouters);
-app.use("api/v1/supportemail", supportemailRouters);
-app.use("api/v1/backupdb", backupdbRouters);
-
-//errorHnadler
-app.use(errorHandler);
-
-//DatBase connection
-connectdb();
-
-//Start the Server
-const port = process.env.port || 5000;
-app.listen(port, "0.0.0.0", ()=>{
-    logger.info(`API server running on port ${port}`);
+client.on("error", (err) => {
+    console.log("MQTT Publish Error:", err);
 });
