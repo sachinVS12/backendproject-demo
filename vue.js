@@ -1,6 +1,6 @@
 const mqtt = require("mqtt");
 
-const YOUR_LOCAL_IP = "192.168.1.231";  // SAME AS ABOVE
+const YOUR_LOCAL_IP = "as1.cloud.thethings.industries";  // SAME AS ABOVE
 
 const client = mqtt.connect(`mqtt://${YOUR_LOCAL_IP}:1883`);
 
