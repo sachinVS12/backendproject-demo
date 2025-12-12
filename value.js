@@ -12,13 +12,13 @@ const mqttRouters = require("./Routers/mqttRouters");
 const supportemailRouters = require("./Routers/supportemailRouters");
 const backupdbRouters = require("./Routers/backupdbRouters");
 
-//load environment vaiable
+//Load environment vaiable
 dotenv.config({path:"./.env"});
 
-//intialize express
+//Intialize express
 const app = express();
 
-//logger configuration
+//Logger configuration
 const logger = winston.createlogger({
     level: "info",
     format: winston.format.combine(
@@ -31,7 +31,7 @@ const logger = winston.createlogger({
     ],
 });
 
-//middleware
+//Middleware
 app.use(express.json());
 app.use(fileupload());
 app.use(express.urlencoded({extended:false}));
@@ -44,7 +44,7 @@ app.use(
     }));
 app.use(cookieparser());
 
-//increase request to timeout and enable chunkked responses
+//Increase request to timeout and enable chunkked responses
 app.use((req, res, next)=>{
     req.setTimeout(60000);
     res.setTimeout(60000);
@@ -65,10 +65,10 @@ app.use("api/v1/backupdb", backupdbRouters);
 //errorHnadler
 app.use(errorhnadler());
 
-//Database conncetion
+//Database Conncetion
 connectdb();
 
-//start the server
+//Start the Server
 const port = process.env.port || 5000;
 app.listen(port , "0.0.0.0",()=>{
     logger.info(`API server running on port`);
