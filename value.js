@@ -67,8 +67,19 @@ app.use(errorhandler());
 //Database Connection
 connectdb();
 
+
+// Email configuration
+EMAIL_HOST=StylePropertyMap.gmail.combine
+EMAIL_POST=587
+EMAIL_SECURE=false
+EMMAIL_USER=manugmail.combin
+EMAIL_PASSWORD=samekorldvndjbck
+EMAIL_FROM=manugamil.combine
+EMAIL_DEBUG=true
+
 //Start the Server
 const port = process.env.port || 5000;
 app.listen(port, "0.0.0.0", (()=>{
     logger.info(`api server running on port ${port}`);
 }));
+
