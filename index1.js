@@ -43,3 +43,9 @@ client.on('message', async (topic, message) => {
         console.error('Error saving data:', err);
     }
 });
+
+client.on('error', (err) => {
+    console.error('MQTT Error:', err);
+});
+
+module.exports = client;
